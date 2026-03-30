@@ -25,6 +25,10 @@ type LocaleSwitcherProps = {
   variant?: "default" | "dark";
 };
 
+function persistLocaleCookie(targetLocale: Locale) {
+  document.cookie = `NEXT_LOCALE=${targetLocale.toUpperCase()}; path=/; max-age=31536000; samesite=lax`;
+}
+
 export function LocaleSwitcher({
   locale,
   className,
@@ -59,9 +63,14 @@ export function LocaleSwitcher({
           <Link
             key={target}
             href={href}
-            onClick={() => {
-              document.cookie = `NEXT_LOCALE=${target}; path=/; max-age=31536000; samesite=lax`;
+            onMouseDown={() => persistLocaleCookie(target)}
+            onTouchStart={() => persistLocaleCookie(target)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                persistLocaleCookie(target);
+              }
             }}
+            onClick={() => persistLocaleCookie(target)}
             className={cn(
               "rounded-full px-3 py-2 text-sm font-medium transition-colors",
               locale === target

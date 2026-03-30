@@ -62,9 +62,12 @@ export function OrbitGlobe({
   className,
   variant = "panel",
 }: OrbitGlobeProps) {
+  const targetFps = 24;
+  const degreesPerSecond = 0.42;
   const isHero = variant === "hero";
   const shouldAnimate = isHero;
   const globeRef = useRef<HTMLDivElement>(null);
+  const rotationRef = useRef(0);
   const [rotation, setRotation] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -91,17 +94,35 @@ export function OrbitGlobe({
     }
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const intervalId = window.setInterval(() => {
+    let frameId = 0;
+    let lastFrameTime = 0;
+    const minimumFrameTime = 1000 / targetFps;
+
+    const tick = (timestamp: number) => {
       if (document.hidden || reducedMotion.matches || !isVisible) {
+        lastFrameTime = timestamp;
+        frameId = window.requestAnimationFrame(tick);
         return;
       }
 
-      // Fewer updates keep the same slow drift while reducing redraw cost.
-      setRotation((current) => (current + 0.08) % 360);
-    }, 180);
+      if (!lastFrameTime) {
+        lastFrameTime = timestamp;
+      }
 
-    return () => window.clearInterval(intervalId);
-  }, [isVisible, shouldAnimate]);
+      const elapsed = timestamp - lastFrameTime;
+      if (elapsed >= minimumFrameTime) {
+        lastFrameTime = timestamp;
+        rotationRef.current = (rotationRef.current + elapsed * (degreesPerSecond / 1000)) % 360;
+        setRotation(rotationRef.current);
+      }
+
+      frameId = window.requestAnimationFrame(tick);
+    };
+
+    frameId = window.requestAnimationFrame(tick);
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [degreesPerSecond, isVisible, shouldAnimate, targetFps]);
 
   const { graticulePath, landPath, projectedLocations, routes } = useMemo(() => {
     const projection = geoOrthographic()
