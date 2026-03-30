@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import "./globals.css";
 
-import { isLocale, siteUrl } from "@/lib/site";
+import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -23,20 +22,13 @@ export const metadata: Metadata = {
   ],
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headerStore = await headers();
-  const headerLocale = headerStore.get("x-locale");
-  const locale = isLocale(headerLocale) ? headerLocale : "en";
-
   return (
-    <html
-      lang={locale === "zh" ? "zh-CN" : "en"}
-      className="h-full scroll-smooth antialiased"
-    >
+    <html lang="en" className="h-full scroll-smooth antialiased">
       <body className="min-h-full bg-background text-foreground">
         {children}
       </body>
