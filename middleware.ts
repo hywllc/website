@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { isLocale } from "@/lib/site";
 import { detectLocaleFromRequest, isPublicAssetPath } from "@/middleware-utils";
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (isPublicAssetPath(pathname)) {
