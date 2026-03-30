@@ -5,10 +5,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "preview": "opennextjs-cloudflare build --config wrangler.jsonc && opennextjs-cloudflare preview --config wrangler.jsonc",
-    "deploy": "opennextjs-cloudflare build --config wrangler.jsonc && opennextjs-cloudflare deploy --config wrangler.jsonc",
-    "upload": "opennextjs-cloudflare build --config wrangler.jsonc && opennextjs-cloudflare upload --config wrangler.jsonc",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "start": "next start",
     "lint": "eslint"
   },
