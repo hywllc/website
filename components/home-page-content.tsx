@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -12,7 +11,6 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { notFound } from "next/navigation";
 
 import { OrbitGlobe } from "@/components/orbit-globe";
 import { PartnerMarquee } from "@/components/partner-marquee";
@@ -20,60 +18,35 @@ import { SectionHeading } from "@/components/section-heading";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import {
   getDictionary,
   getStructuredData,
-  isLocale,
-  locales,
   networkLocations,
   partnerLogos,
   type Locale,
 } from "@/lib/site";
+import { cn } from "@/lib/utils";
 
-type HomePageProps = {
-  params: Promise<{ locale: string }>;
+type HomePageContentProps = {
+  locale: Locale;
+  canonicalPath?: string;
 };
 
 const serviceIcons = [CloudCog, Network, Cpu];
 const valueIcons = [Globe2, ShieldCheck, Database];
 
-export async function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
+function localizedHref(locale: Locale, path: "" | "/partners") {
+  return locale === "zh" ? `/zh${path}` : path || "/";
 }
 
-export async function generateMetadata({
-  params,
-}: HomePageProps): Promise<Metadata> {
-  const { locale } = await params;
-  if (!isLocale(locale)) {
-    return {};
-  }
-
+export function HomePageContent({ locale, canonicalPath }: HomePageContentProps) {
   const dictionary = getDictionary(locale);
-
-  return {
-    title: dictionary.meta.homeTitle,
-    description: dictionary.meta.description,
-    alternates: {
-      canonical: `/${locale}`,
-      languages: {
-        en: "/en",
-        zh: "/zh",
-        "x-default": "/en",
-      },
-    },
-  };
-}
-
-export default async function HomePage({ params }: HomePageProps) {
-  const { locale } = await params;
-  if (!isLocale(locale)) {
-    notFound();
-  }
-
-  const dictionary = getDictionary(locale);
-  const structuredData = getStructuredData(locale as Locale, "home");
+  const structuredData = getStructuredData(
+    locale,
+    "home",
+    canonicalPath ?? (locale === "zh" ? "/zh" : "/"),
+  );
+  const partnerHref = localizedHref(locale, "/partners");
 
   return (
     <>
@@ -87,7 +60,7 @@ export default async function HomePage({ params }: HomePageProps) {
         <div className="pointer-events-none absolute inset-y-[-6%] right-[-45%] w-[160vw] opacity-92 sm:right-[-28%] sm:w-[125vw] lg:right-[-14%] lg:w-[72rem] xl:right-[-8%] xl:w-[82rem] 2xl:w-[92rem]">
           <OrbitGlobe
             locations={networkLocations}
-            locale={locale as Locale}
+            locale={locale}
             variant="hero"
             className="h-full w-full justify-center scale-[1.55] sm:scale-[1.4] lg:scale-[1.58]"
           />
@@ -121,7 +94,7 @@ export default async function HomePage({ params }: HomePageProps) {
 
             <div className="flex flex-col gap-4 sm:flex-row">
               <Link
-                href={`/${locale}/partners`}
+                href={partnerHref}
                 className={cn(
                   buttonVariants({ size: "lg" }),
                   "h-12 rounded-full border border-white/14 bg-white px-7 text-base text-black hover:bg-white/92",
@@ -329,11 +302,7 @@ export default async function HomePage({ params }: HomePageProps) {
             </div>
           </div>
           <div className="panel-dark overflow-hidden rounded-[2rem] p-6 sm:p-7">
-            <OrbitGlobe
-              locations={networkLocations}
-              locale={locale as Locale}
-              detailed
-            />
+            <OrbitGlobe locations={networkLocations} locale={locale} detailed />
           </div>
         </div>
       </section>
@@ -497,7 +466,7 @@ export default async function HomePage({ params }: HomePageProps) {
               ))}
             </div>
             <Link
-              href={`/${locale}/partners`}
+              href={partnerHref}
               className={cn(
                 buttonVariants({ size: "lg", variant: "outline" }),
                 "mt-8 h-12 rounded-full border-primary/20 bg-white/75 px-7 text-base text-primary hover:bg-white",

@@ -101,9 +101,14 @@ export function getDictionary(locale: Locale) {
   return dictionaries[locale];
 }
 
-export function getStructuredData(locale: Locale, page: "home" | "partners") {
+export function getStructuredData(
+  locale: Locale,
+  page: "home" | "partners",
+  canonicalPath?: string,
+) {
   const dictionary = getDictionary(locale);
-  const path = page === "home" ? `/${locale}` : `/${locale}/partners`;
+  const path =
+    canonicalPath ?? (page === "home" ? `/${locale}` : `/${locale}/partners`);
 
   return {
     "@context": "https://schema.org",

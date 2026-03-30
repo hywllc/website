@@ -34,7 +34,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang={locale}
+      lang={locale === "zh" ? "zh-CN" : "en"}
       className="h-full scroll-smooth antialiased"
     >
       <body className="min-h-full bg-background text-foreground">

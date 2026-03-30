@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -10,7 +9,6 @@ import {
   Sparkles,
   Waypoints,
 } from "lucide-react";
-import { notFound } from "next/navigation";
 
 import { PartnerMarquee } from "@/components/partner-marquee";
 import { SectionHeading } from "@/components/section-heading";
@@ -20,56 +18,34 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   getDictionary,
   getStructuredData,
-  isLocale,
-  locales,
   partnerLogos,
   type Locale,
 } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-type PartnerPageProps = {
-  params: Promise<{ locale: string }>;
+type PartnersPageContentProps = {
+  locale: Locale;
+  canonicalPath?: string;
 };
 
 const programIcons = [Handshake, Layers3, ShieldCheck];
 const valueIcons = [Network, Cable, Waypoints];
 
-export async function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
+function localizedHref(locale: Locale) {
+  return locale === "zh" ? "/zh" : "/";
 }
 
-export async function generateMetadata({
-  params,
-}: PartnerPageProps): Promise<Metadata> {
-  const { locale } = await params;
-  if (!isLocale(locale)) {
-    return {};
-  }
-
+export function PartnersPageContent({
+  locale,
+  canonicalPath,
+}: PartnersPageContentProps) {
   const dictionary = getDictionary(locale);
-
-  return {
-    title: dictionary.meta.partnersTitle,
-    description: dictionary.partnersPage.metaDescription,
-    alternates: {
-      canonical: `/${locale}/partners`,
-      languages: {
-        en: "/en/partners",
-        zh: "/zh/partners",
-        "x-default": "/en/partners",
-      },
-    },
-  };
-}
-
-export default async function PartnersPage({ params }: PartnerPageProps) {
-  const { locale } = await params;
-  if (!isLocale(locale)) {
-    notFound();
-  }
-
-  const dictionary = getDictionary(locale);
-  const structuredData = getStructuredData(locale as Locale, "partners");
+  const structuredData = getStructuredData(
+    locale,
+    "partners",
+    canonicalPath ?? (locale === "zh" ? "/zh/partners" : "/partners"),
+  );
+  const homeHref = localizedHref(locale);
 
   return (
     <>
@@ -105,7 +81,7 @@ export default async function PartnersPage({ params }: PartnerPageProps) {
                   <ArrowRight className="size-4" />
                 </Link>
                 <Link
-                  href={`/${locale}`}
+                  href={homeHref}
                   className={cn(
                     buttonVariants({ size: "lg", variant: "outline" }),
                     "h-12 rounded-full border-white/15 bg-white/5 px-7 text-base text-white hover:bg-white/10",

@@ -1,12 +1,12 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { geoGraticule10, geoInterpolate, geoOrthographic, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import land110m from "world-atlas/land-110m.json";
 
-import { cn } from "@/lib/utils";
 import type { GlobeLocation, Locale } from "@/lib/site";
+import { cn } from "@/lib/utils";
 
 type OrbitGlobeProps = {
   locations: GlobeLocation[];
@@ -26,7 +26,7 @@ const routePairs = [
   ["new-york", "frankfurt"],
   ["frankfurt", "tokyo"],
   ["tokyo", "shanghai"],
-  ["tokyo","taipei"],
+  ["tokyo", "taipei"],
   ["shanghai", "hong-kong"],
   ["hong-kong", "taipei"],
 ] as const;
@@ -39,8 +39,8 @@ function buildArcPath(
   const interpolate = geoInterpolate(source, target);
   const points: [number, number][] = [];
 
-  for (let i = 0; i <= 30; i += 1) {
-    const projected = projection(interpolate(i / 30));
+  for (let i = 0; i <= 18; i += 1) {
+    const projected = projection(interpolate(i / 18));
     if (projected) {
       points.push(projected as [number, number]);
     }
@@ -63,17 +63,45 @@ export function OrbitGlobe({
   variant = "panel",
 }: OrbitGlobeProps) {
   const isHero = variant === "hero";
+  const shouldAnimate = isHero;
+  const globeRef = useRef<HTMLDivElement>(null);
   const [rotation, setRotation] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    if (!shouldAnimate) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry?.isIntersecting ?? true),
+      { threshold: 0.08 },
+    );
+
+    if (globeRef.current) {
+      observer.observe(globeRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [shouldAnimate]);
+
+  useEffect(() => {
+    if (!shouldAnimate) {
+      return;
+    }
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const intervalId = window.setInterval(() => {
-      // Low-frequency updates keep the globe smooth enough visually while
-      // avoiding expensive full reprojection work on every animation frame.
-      setRotation((current) => (current + 0.025) % 360);
-    }, 60);
+      if (document.hidden || reducedMotion.matches || !isVisible) {
+        return;
+      }
+
+      // Fewer updates keep the same slow drift while reducing redraw cost.
+      setRotation((current) => (current + 0.08) % 360);
+    }, 180);
 
     return () => window.clearInterval(intervalId);
-  }, []);
+  }, [isVisible, shouldAnimate]);
 
   const { graticulePath, landPath, projectedLocations, routes } = useMemo(() => {
     const projection = geoOrthographic()
@@ -119,10 +147,10 @@ export function OrbitGlobe({
       );
 
     return {
-      graticulePath: path(graticule),
+      graticulePath: isHero ? null : path(graticule),
       landPath: path(land),
       projectedLocations: points,
-      routes: routePaths,
+      routes: isHero ? [] : routePaths,
     };
   }, [detailed, isHero, locations, rotation]);
 
@@ -136,7 +164,7 @@ export function OrbitGlobe({
   const showCards = !isHero && !detailed;
 
   return (
-    <div className={cn("relative isolate flex flex-col gap-6", className)}>
+    <div ref={globeRef} className={cn("relative isolate flex flex-col gap-6", className)}>
       <div
         className={cn(
           "relative mx-auto aspect-square w-full",

@@ -22,6 +22,18 @@ const sectionLinks = [
   { key: "contact", id: "contact" },
 ] as const;
 
+function homeHref(locale: Locale) {
+  return locale === "zh" ? "/zh" : "/";
+}
+
+function partnersHref(locale: Locale) {
+  return locale === "zh" ? "/zh/partners" : "/partners";
+}
+
+function sectionHref(locale: Locale, id: string) {
+  return `${homeHref(locale)}#${id}`;
+}
+
 type SiteHeaderProps = {
   locale: Locale;
   dictionary: Dictionary;
@@ -31,20 +43,20 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-transparent bg-transparent">
       <div className="container-shell flex h-20 items-center justify-between gap-4">
-        <LogoMark href={`/${locale}`} inverse />
+        <LogoMark href={homeHref(locale)} inverse />
 
         <nav className="hidden items-center gap-6 xl:gap-7 lg:flex">
           {sectionLinks.map((link) => (
             <Link
               key={link.key}
-              href={`/${locale}/#${link.id}`}
+              href={sectionHref(locale, link.id)}
               className="whitespace-nowrap text-sm font-medium text-white/68 transition-colors hover:text-white"
             >
               {dictionary.nav[link.key]}
             </Link>
           ))}
           <Link
-            href={`/${locale}/partners`}
+            href={partnersHref(locale)}
             className="whitespace-nowrap text-sm font-medium text-white/68 transition-colors hover:text-white"
           >
             {dictionary.nav.partnerPage}
@@ -56,11 +68,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
         </div>
 
         <div className="flex items-center gap-3 lg:hidden">
-          <LocaleSwitcher
-            locale={locale}
-            variant="dark"
-            className="hidden sm:inline-flex"
-          />
+          <LocaleSwitcher locale={locale} variant="dark" className="hidden sm:inline-flex" />
           <Sheet>
             <SheetTrigger
               render={
@@ -80,7 +88,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
             >
               <SheetHeader>
                 <SheetTitle>
-                  <LogoMark href={`/${locale}`} compact />
+                  <LogoMark href={homeHref(locale)} compact />
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-8 flex flex-col gap-5">
@@ -88,16 +96,13 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
                 {sectionLinks.map((link) => (
                   <Link
                     key={link.key}
-                    href={`/${locale}/#${link.id}`}
+                    href={sectionHref(locale, link.id)}
                     className="text-base font-medium text-slate-700"
                   >
                     {dictionary.nav[link.key]}
                   </Link>
                 ))}
-                <Link
-                  href={`/${locale}/partners`}
-                  className="text-base font-medium text-slate-700"
-                >
+                <Link href={partnersHref(locale)} className="text-base font-medium text-slate-700">
                   {dictionary.nav.partnerPage}
                 </Link>
               </div>

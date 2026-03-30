@@ -16,7 +16,7 @@ function LogoWordmark({
   return (
     <div
       className={cn(
-        "flex min-w-[184px] items-center justify-center rounded-full border border-white/8 bg-white/[0.03] px-7 py-5 text-center backdrop-blur-sm transition-colors hover:bg-white/[0.06]",
+        "flex min-w-[184px] items-center justify-center rounded-full border border-white/8 bg-white/[0.045] px-7 py-5 text-center transition-colors hover:bg-white/[0.07]",
         compact && "min-w-[168px] px-6 py-4",
       )}
     >

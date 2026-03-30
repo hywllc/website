@@ -4,22 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Languages } from "lucide-react";
 
+import { localeLabels, type Locale } from "@/lib/site";
 import { cn } from "@/lib/utils";
-import { localeLabels, locales, type Locale } from "@/lib/site";
 
-function replaceLocale(pathname: string, targetLocale: Locale) {
-  const segments = pathname.split("/").filter(Boolean);
+function toLocalizedPath(pathname: string, targetLocale: Locale) {
+  const normalized = pathname === "/" ? "/" : pathname.replace(/\/$/, "");
+  const isZhPath = normalized === "/zh" || normalized.startsWith("/zh/");
+  const suffix = isZhPath ? normalized.slice(3) || "/" : normalized;
 
-  if (segments.length === 0) {
-    return `/${targetLocale}`;
+  if (targetLocale === "zh") {
+    return suffix === "/" ? "/zh" : `/zh${suffix}`;
   }
 
-  if (locales.includes(segments[0] as Locale)) {
-    segments[0] = targetLocale;
-    return `/${segments.join("/")}`;
-  }
-
-  return `/${targetLocale}/${segments.join("/")}`;
+  return suffix || "/";
 }
 
 type LocaleSwitcherProps = {
@@ -33,8 +30,9 @@ export function LocaleSwitcher({
   className,
   variant = "default",
 }: LocaleSwitcherProps) {
-  const pathname = usePathname() || `/${locale}`;
+  const pathname = usePathname() || (locale === "zh" ? "/zh" : "/");
   const dark = variant === "dark";
+  const localeOptions: Locale[] = ["en", "zh"];
 
   return (
     <div
@@ -54,27 +52,31 @@ export function LocaleSwitcher({
       >
         <Languages className="size-4" />
       </div>
-      {locales.map((target) => (
-        <Link
-          key={target}
-          href={replaceLocale(pathname, target)}
-          onClick={() => {
-            document.cookie = `NEXT_LOCALE=${target}; path=/; max-age=31536000; samesite=lax`;
-          }}
-          className={cn(
-            "rounded-full px-3 py-2 text-sm font-medium transition-colors",
-            locale === target
-              ? dark
-                ? "bg-white text-black"
-                : "bg-primary text-primary-foreground"
-              : dark
-                ? "text-white/68 hover:bg-white/[0.08] hover:text-white"
-                : "text-slate-600 hover:bg-slate-100",
-          )}
-        >
-          {localeLabels[target]}
-        </Link>
-      ))}
+      {localeOptions.map((target) => {
+        const href = toLocalizedPath(pathname, target);
+
+        return (
+          <Link
+            key={target}
+            href={href}
+            onClick={() => {
+              document.cookie = `NEXT_LOCALE=${target}; path=/; max-age=31536000; samesite=lax`;
+            }}
+            className={cn(
+              "rounded-full px-3 py-2 text-sm font-medium transition-colors",
+              locale === target
+                ? dark
+                  ? "bg-white text-black"
+                  : "bg-primary text-primary-foreground"
+                : dark
+                  ? "text-white/68 hover:bg-white/[0.08] hover:text-white"
+                  : "text-slate-600 hover:bg-slate-100",
+            )}
+          >
+            {localeLabels[target]}
+          </Link>
+        );
+      })}
     </div>
   );
 }

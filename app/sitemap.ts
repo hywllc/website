@@ -1,20 +1,50 @@
 import type { MetadataRoute } from "next";
 
-import { locales, siteUrl } from "@/lib/site";
+import { siteUrl } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/partners"];
+  const lastModified = new Date();
 
-  return routes.flatMap((route) =>
-    locales.map((locale) => ({
-      url: `${siteUrl}/${locale}${route}`,
-      lastModified: new Date(),
+  return [
+    {
+      url: siteUrl,
+      lastModified,
       alternates: {
         languages: {
-          en: `${siteUrl}/en${route}`,
-          zh: `${siteUrl}/zh${route}`,
+          en: `${siteUrl}/`,
+          zh: `${siteUrl}/zh`,
         },
       },
-    })),
-  );
+    },
+    {
+      url: `${siteUrl}/partners`,
+      lastModified,
+      alternates: {
+        languages: {
+          en: `${siteUrl}/partners`,
+          zh: `${siteUrl}/zh/partners`,
+        },
+      },
+    },
+    {
+      url: `${siteUrl}/zh`,
+      lastModified,
+      alternates: {
+        languages: {
+          en: `${siteUrl}/`,
+          zh: `${siteUrl}/zh`,
+        },
+      },
+    },
+    {
+      url: `${siteUrl}/zh/partners`,
+      lastModified,
+      alternates: {
+        languages: {
+          en: `${siteUrl}/partners`,
+          zh: `${siteUrl}/zh/partners`,
+        },
+      },
+    },
+  ];
 }
