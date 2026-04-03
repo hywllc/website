@@ -75,7 +75,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rounded-full border-white/12 bg-white/6 text-white hover:bg-white/10"
+                  className="rounded-full border-white/18 bg-white/[0.08] text-white hover:bg-white/[0.12]"
                 />
               }
             >

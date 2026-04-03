@@ -97,7 +97,7 @@ export function HomePageContent({ locale, canonicalPath }: HomePageContentProps)
                 href={partnerHref}
                 className={cn(
                   buttonVariants({ size: "lg" }),
-                  "h-12 rounded-full border border-white/14 bg-white px-7 text-base text-black hover:bg-white/92",
+                  "h-12 rounded-full border-white/22 bg-white/[0.14] px-7 text-base text-white hover:bg-white/[0.18]",
                 )}
               >
                 {dictionary.hero.primaryCta}
@@ -107,7 +107,7 @@ export function HomePageContent({ locale, canonicalPath }: HomePageContentProps)
                 href="#globe"
                 className={cn(
                   buttonVariants({ size: "lg", variant: "outline" }),
-                  "h-12 rounded-full border-white/12 bg-white/[0.03] px-7 text-base text-white hover:bg-white/[0.08]",
+                  "h-12 rounded-full border-white/18 bg-white/[0.08] px-7 text-base text-white/92 hover:bg-white/[0.12]",
                 )}
               >
                 {dictionary.hero.secondaryCta}
@@ -374,7 +374,7 @@ export function HomePageContent({ locale, canonicalPath }: HomePageContentProps)
                 rel="noreferrer"
                 className={cn(
                   buttonVariants({ size: "lg" }),
-                  "mt-6 h-12 rounded-full bg-white text-primary hover:bg-white/90",
+                  "mt-6 h-12 rounded-full border-white/22 bg-white/[0.14] px-7 text-base text-white hover:bg-white/[0.18]",
                 )}
               >
                 {dictionary.cxix.cta}
@@ -469,7 +469,7 @@ export function HomePageContent({ locale, canonicalPath }: HomePageContentProps)
               href={partnerHref}
               className={cn(
                 buttonVariants({ size: "lg", variant: "outline" }),
-                "mt-8 h-12 rounded-full border-primary/20 bg-white/75 px-7 text-base text-primary hover:bg-white",
+                "mt-8 h-12 rounded-full border-white/52 bg-white/38 px-7 text-base text-slate-950 hover:bg-white/48",
               )}
             >
               {dictionary.partners.cta}

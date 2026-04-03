@@ -74,7 +74,7 @@ export function PartnersPageContent({
                   rel="noreferrer"
                   className={cn(
                     buttonVariants({ size: "lg" }),
-                    "h-12 rounded-full bg-white px-7 text-base text-primary hover:bg-white/90",
+                    "h-12 rounded-full border-white/22 bg-white/[0.14] px-7 text-base text-white hover:bg-white/[0.18]",
                   )}
                 >
                   {dictionary.partnersPage.primaryCta}
@@ -84,7 +84,7 @@ export function PartnersPageContent({
                   href={homeHref}
                   className={cn(
                     buttonVariants({ size: "lg", variant: "outline" }),
-                    "h-12 rounded-full border-white/15 bg-white/5 px-7 text-base text-white hover:bg-white/10",
+                    "h-12 rounded-full border-white/18 bg-white/[0.08] px-7 text-base text-white/92 hover:bg-white/[0.12]",
                   )}
                 >
                   {dictionary.partnersPage.secondaryCta}
